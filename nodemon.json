@@ -1,8 +1,0 @@
-{
-  "env": {
-    "DB_NAME": "crypto",
-    "DB_PASSWORD": "zhdwnlvkxwnl3",
-    "DB_USER": "cha",
-    "JWT_KEY": "supersecret_dont_share"
-  }
-}

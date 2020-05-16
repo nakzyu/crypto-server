@@ -9,7 +9,7 @@ const User = require("../models/user");
 cloudinary.config({
   cloud_name: `${process.env.CLOUDINARY_NAME}`,
   api_key: `${process.env.CLOUDINARY_KEY}`,
-  api_secret: `${process.env.CLOUDINARY_SECRET}`
+  api_secret: `${process.env.CLOUDINARY_SECRET}`,
 });
 
 const getAllPosts = async (req, res, next) => {
@@ -23,14 +23,14 @@ const getAllPosts = async (req, res, next) => {
   if (endIndex < (await Post.countDocuments().exec())) {
     results.next = {
       page: page + 1,
-      limit: limit
+      limit: limit,
     };
   }
 
   if (startIndex > 0) {
     results.previous = {
       page: page - 1,
-      limit: limit
+      limit: limit,
     };
   }
 
@@ -90,37 +90,30 @@ const getPostsByUserId = async (req, res, next) => {
 
   res.json({
     posts: userWithPosts.posts
-      .map(post => post.toObject({ getters: true }))
-      .reverse()
+      .map((post) => post.toObject({ getters: true }))
+      .reverse(),
   });
 };
 
 const createPost = async (req, res, next) => {
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
       new HttpError("Invalid inputs passed, please check your data.", 422)
     );
   }
-  const { description, date } = req.body;
+  const { title, date, selected, amount } = req.body;
 
   let createdPost;
-  try {
-    await cloudinary.uploader.upload(req.files.image.path, result => {
-      createdPost = new Post({
-        creator: req.userData.userId,
-        description,
-        date,
-        image: result.url
-      });
-    });
-  } catch (err) {
-    const error = new HttpError(
-      "Creating post failed, please try again later",
-      500
-    );
-    return next(error);
-  }
+
+  createdPost = new Post({
+    creator: req.userData.userId,
+    title,
+    amount,
+    selected,
+    date,
+  });
 
   let user;
 
@@ -141,8 +134,6 @@ const createPost = async (req, res, next) => {
     );
     return next(error);
   }
-
-  console.log(user);
 
   try {
     const sess = await mongooose.startSession();

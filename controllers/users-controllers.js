@@ -9,7 +9,7 @@ const User = require("../models/user");
 cloudinary.config({
   cloud_name: `${process.env.CLOUDINARY_NAME}`,
   api_key: `${process.env.CLOUDINARY_KEY}`,
-  api_secret: `${process.env.CLOUDINARY_SECRET}`
+  api_secret: `${process.env.CLOUDINARY_SECRET}`,
 });
 
 const getUsers = async (req, res, next) => {
@@ -32,7 +32,7 @@ const getUsers = async (req, res, next) => {
     image,
     name,
     description,
-    posts
+    posts,
   });
 };
 
@@ -80,7 +80,7 @@ const signup = async (req, res, next) => {
     name,
     email,
     password: hashedPassword,
-    posts: []
+    posts: [],
   });
 
   try {
@@ -89,6 +89,8 @@ const signup = async (req, res, next) => {
     const error = new HttpError("Signing up failed.", 500);
     return next(error);
   }
+
+  console.log("sdad");
 
   let token;
   try {
@@ -167,7 +169,7 @@ const login = async (req, res, next) => {
   res.json({
     userId: existingUser.id,
     email: existingUser.email,
-    token: token
+    token: token,
   });
 };
 
@@ -191,7 +193,7 @@ const updateUserImage = async (req, res, next) => {
 
   let imageToUpdatedUrl;
   try {
-    await cloudinary.uploader.upload(req.files.image.path, result => {
+    await cloudinary.uploader.upload(req.files.image.path, (result) => {
       imageToUpdatedUrl = result.url;
     });
   } catch (err) {

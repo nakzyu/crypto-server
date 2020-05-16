@@ -1,7 +1,6 @@
 const express = require("express");
 const { check } = require("express-validator");
-const multipart = require("connect-multiparty");
-const multipartMiddleware = multipart();
+
 const postsControllers = require("../controllers/posts-controllers");
 const checkAuth = require("../middleware/check-auth");
 
@@ -21,14 +20,13 @@ router.use(checkAuth);
 
 router.post(
   "/",
-  multipartMiddleware,
-  check("description").isLength({ max: 300 }),
+  [check("title").not().isEmpty(), check("selected").not().isEmpty()],
   postsControllers.createPost
 );
 
 router.patch(
   "/:pid",
-  [check("description").isLength({ max: 100 })],
+  [check("description").isLength({ max: 100 }), check("name").not().isEmpty()],
   postsControllers.updatePost
 );
 
